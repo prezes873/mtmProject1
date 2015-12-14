@@ -6,10 +6,10 @@ package com.example.maciek.mtmproject;
 public class Object {
 
     String nazwa;
-    float lat, lgn;
+    double lat, lgn;
 
 
-    public  Object(float lgn, float lat, String nazwa)
+    public  Object(double lgn, double lat, String nazwa)
     {
         this.lat = lat;
         this.lgn = lgn;

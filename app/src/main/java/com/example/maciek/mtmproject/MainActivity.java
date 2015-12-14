@@ -4,33 +4,46 @@ package com.example.maciek.mtmproject;
  * Created by maciek on 2015-12-13.
  */
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements SensorEventListener{
+public class MainActivity extends Activity implements SensorEventListener {
     TextView tv, tvLocation;
     MojeView mv;
     SurfaceView sv;
     List<Object> objectList;
-    GpsClass gpsClass;
+    Location memberLoc, loc1;
+    LocationManager locationManager;
+    String objectName;
+    Button btnAddPoint;
+    boolean gpsConnected;
+    DataBase dataBase;
 
-    final float cameraB[]=new float[]{0,0,-1};
-    float namiarM[]=new float[]{1,0,0};
-    float namiarB[] = new float[]{0,1,0};
-    float cameraM[]=new float[3];
+    final float cameraB[] = new float[]{0, 0, -1};
+    float namiarM[] = new float[]{1, 0, 0};
+    float namiarB[] = new float[]{0, 1, 0};
+    float cameraM[] = new float[3];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +51,73 @@ public class MainActivity extends Activity implements SensorEventListener{
         setContentView(R.layout.activity_main);
 
 
-        tvLocation = (TextView)findViewById(R.id.tvLocation);
-        tv = (TextView)findViewById(R.id.tvKat);
-        mv = (MojeView)findViewById(R.id.view);
+        tvLocation = (TextView) findViewById(R.id.tvLocation);
+        tv = (TextView) findViewById(R.id.tvKat);
+        mv = (MojeView) findViewById(R.id.view);
         objectList = new ArrayList<>();
+        btnAddPoint = (Button) findViewById(R.id.btnAddPoint);
+        dataBase = new DataBase(this);
 
-        float lonx = (float) (18.0 /180*Math.PI);
-        float latx = (float)(55.0 /180*Math.PI);
-        float lonu = (float) (18.0 /180*Math.PI);
-        float latu = (float)(55.0 /180*Math.PI);
-        float []enu = latlonToENU(latx,lonx,100,latu,lonu,0);
-        Log.i("krbrlog","x:"+enu[0]);
-        Log.i("krbrlog","y:"+enu[1]);
-        Log.i("krbrlog","z:"+enu[2]);
+        btnAddPoint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                savePoint();
+            }
+        });
+
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+
+        float lonx = (float) (18.0 / 180 * Math.PI);
+        float latx = (float) (55.0 / 180 * Math.PI);
+        float lonu = (float) (18.0 / 180 * Math.PI);
+        float latu = (float) (55.0 / 180 * Math.PI);
+        float[] enu = latlonToENU(latx, lonx, 100, latu, lonu, 0);
+        Log.i("krbrlog", "x:" + enu[0]);
+        Log.i("krbrlog", "y:" + enu[1]);
+        Log.i("krbrlog", "z:" + enu[2]);
         namiarM = enu;
+    }
+
+    LocationListener ll = new LocationListener() {
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+
+            Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            tvLocation.setText(String.valueOf(loc.getLatitude())+"\n"+String.valueOf(loc.getLongitude()));
+
+            loc1 = loc;
+            if (memberLoc != null) {
+
+                //tvDist.setText(String.valueOf(loc.distanceTo(memberLoc)));
+                //tvDirTo.setText(String.valueOf(loc.bearingTo(memberLoc)));
+            }
+        }
+    };
+
+    public void savePoint()
+    {
+
+            memberLoc = loc1;
+            objectList.add(new Object(memberLoc.getLongitude(), memberLoc.getLatitude(), objectName));
+
     }
 
     @Override
@@ -137,7 +203,7 @@ public class MainActivity extends Activity implements SensorEventListener{
                     cameraB[1]*rotFromBtoM[1+6]+
                     cameraB[2]*rotFromBtoM[2+6];
             //Log.i("kbbrlog", "getAngle: " + getAngle(northM, cameraM));
-            tv.setText(""+getAngle(namiarM, cameraM));
+            tv.setText(""+(double)(Math.round(getAngle(namiarM, cameraM)* 1000))/1000);
 
             namiarB[0]=namiarM[0]*rotFromBtoM[0]+
                     namiarM[1]*rotFromBtoM[3]+
