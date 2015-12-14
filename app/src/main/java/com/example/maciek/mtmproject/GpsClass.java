@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class GpsClass extends MainActivity {
 
-    Location memberLoc, loc1;
+    Location memberLoc, loc1, loc2;
 
     public GpsClass()
     {
