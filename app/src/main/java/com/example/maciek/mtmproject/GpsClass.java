@@ -12,6 +12,8 @@ import android.widget.TextView;
 /**
  * Created by maciek on 2015-12-13.
  */
+
+
 public class GpsClass extends MainActivity {
 
     Location memberLoc, loc1;

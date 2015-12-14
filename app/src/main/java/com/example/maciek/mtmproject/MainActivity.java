@@ -1,6 +1,8 @@
 package com.example.maciek.mtmproject;
 
-
+/**
+ * Created by maciek on 2015-12-13.
+ */
 
 import android.app.Activity;
 import android.content.Context;
