@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     MojeView mv;
     SurfaceView sv;
     List<Object> objectList;
-    Location memberLoc, loc1;
+    Location loc1 = null;
     LocationManager locationManager;
     String objectName;
     Button btnAddPoint;
@@ -57,6 +57,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         objectList = new ArrayList<>();
         btnAddPoint = (Button) findViewById(R.id.btnAddPoint);
         dataBase = new DataBase(this);
+        objectList = dataBase.getObjectListFromDB();
 
         btnAddPoint.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,20 +105,14 @@ public class MainActivity extends Activity implements SensorEventListener {
             tvLocation.setText(String.valueOf(loc.getLatitude())+"\n"+String.valueOf(loc.getLongitude()));
 
             loc1 = loc;
-            if (memberLoc != null) {
-
-                //tvDist.setText(String.valueOf(loc.distanceTo(memberLoc)));
-                //tvDirTo.setText(String.valueOf(loc.bearingTo(memberLoc)));
-            }
         }
     };
 
     public void savePoint()
     {
-
-            memberLoc = loc1;
-            objectList.add(new Object(memberLoc.getLongitude(), memberLoc.getLatitude(), objectName));
-
+        if (loc1 != null) {
+            objectList.add(new Object(loc1.getLongitude(), loc1.getLatitude(), objectName));
+        }
     }
 
     @Override
