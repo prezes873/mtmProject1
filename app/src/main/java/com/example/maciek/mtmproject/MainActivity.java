@@ -7,6 +7,7 @@ package com.example.maciek.mtmproject;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
@@ -17,6 +18,9 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +32,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements SensorEventListener {
+public class MainActivity extends FragmentActivity implements SensorEventListener {
     TextView tv, tvLocation;
     MojeView mv;
     SurfaceView sv;
@@ -36,9 +40,9 @@ public class MainActivity extends Activity implements SensorEventListener {
     Location loc1 = null;
     LocationManager locationManager;
     String objectName;
-    Button btnAddPoint;
+    Button btnAddPoint, btnShowPoint;
     boolean gpsConnected;
-    DataBase dataBase;
+    FragmentManager fm = getSupportFragmentManager();
 
     final float cameraB[] = new float[]{0, 0, -1};
     float namiarM[] = new float[]{1, 0, 0};
@@ -56,15 +60,30 @@ public class MainActivity extends Activity implements SensorEventListener {
         mv = (MojeView) findViewById(R.id.view);
         objectList = new ArrayList<>();
         btnAddPoint = (Button) findViewById(R.id.btnAddPoint);
-        dataBase = new DataBase(this);
-        objectList = dataBase.getObjectListFromDB();
+        btnShowPoint = (Button) findViewById(R.id.btnShowPoint);
+        objectList = DataBase.getInstance(this).getObjectListFromDB();
+        final MainActivity temp = this;
 
         btnAddPoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                savePoint();
+                if (loc1 != null) {
+                    ObjectNameDialog nameDialog = new ObjectNameDialog();
+                    nameDialog.show(fm, "test");
+                    nameDialog.addContext(temp);
+                }
             }
         });
+
+        btnShowPoint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ObjectListDialog listDialog = new ObjectListDialog();
+                listDialog.show(fm, "List Dialog");
+
+            }
+        });
+
 
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -80,6 +99,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         Log.i("krbrlog", "z:" + enu[2]);
         namiarM = enu;
     }
+
 
     LocationListener ll = new LocationListener() {
         @Override
@@ -108,11 +128,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
     };
 
-    public void savePoint()
+    public void savePoint(String name)
     {
-        if (loc1 != null) {
-            objectList.add(new Object(loc1.getLongitude(), loc1.getLatitude(), objectName));
-        }
+            DataBase.getInstance(this).addObjectToTable(loc1.getLongitude(), loc1.getLatitude(), name);
+            objectList = DataBase.getInstance(this).getObjectListFromDB();
     }
 
     @Override

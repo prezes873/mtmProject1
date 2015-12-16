@@ -19,8 +19,9 @@ public class DataBase {
     SQLiteDatabase myDataBase;
     Context context;
 
+    private static DataBase instance;
 
-    public DataBase(Context context)
+    private DataBase(Context context)
     {
         this.context = context;
         String test = Environment.getRootDirectory().getPath()+File.separator+"myDB";
@@ -29,6 +30,17 @@ public class DataBase {
         //clearTable();
         createTable();
     }
+
+    public static DataBase getInstance(Context context)
+    {
+        if (instance == null)
+        {
+            instance = new DataBase(context);
+        }
+        return  instance;
+    }
+
+
 
     public boolean dir_exists(String dir_path)
     {
@@ -42,7 +54,7 @@ public class DataBase {
     private void createTable()
     {
         myDataBase.execSQL("Create table if not exists objectTable(Name VARCHAR, Latitude double, Longitutde double);");
-        myDataBase.execSQL("Insert into objectTable Values('test', 2.3 , 2.3);");
+        //myDataBase.execSQL("Insert into objectTable Values('test', 2.3 , 2.3);");
     }
 
     private void clearTable()
@@ -52,7 +64,13 @@ public class DataBase {
 
     public void addObjectToTable(double lng, double lat, String name)
     {
-        myDataBase.execSQL("Insert into objectTable Values('"+name+"', "+lat+" , "+lng+");");
+        try {
+            myDataBase.execSQL("Insert into objectTable Values('" + name + "', " + lat + " , " + lng + ");");
+        }
+        catch(android.database.sqlite.SQLiteException ex)
+        {
+            String log = ex.getMessage().toString();
+        }
     }
 
     public List<Object> getObjectListFromDB()
@@ -72,6 +90,23 @@ public class DataBase {
         }
 
         return objectList;
+    }
+
+    public String[] getNameList()
+    {
+        String[] list;
+
+        Cursor objectTable = myDataBase.rawQuery("Select Name from objectTable",null);
+
+        objectTable.moveToFirst();
+        list = new String[objectTable.getCount()];
+        for (int i = 0; i < objectTable.getCount(); i++)
+        {
+            list[i] = objectTable.getString(0);
+            objectTable.moveToNext();
+        }
+
+        return list;
     }
 
 }
