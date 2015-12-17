@@ -30,8 +30,9 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
     LocationManager locationManager;
     Button btnAddPoint, btnShowPoint;
     FragmentManager fm = getSupportFragmentManager();
+    boolean Flag;
 
-    final float cameraB[] = new float[]{0, 0, -1};
+    final float cameraB[] = new float[]{0, 0, 1};
     float namiarM[] = new float[]{1, 0, 0};
     float namiarB[] = new float[]{0, 1, 0};
     float cameraM[] = new float[3];
@@ -71,19 +72,9 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
             }
         });
 
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
 
-        float lonx = (float) (18.61289311 / 180 * Math.PI);
-        float latx = (float) (54.37123401 / 180 * Math.PI);
-        float lonu = (float) (objectList.get(0).lgn / 180 * Math.PI);
-        float latu = (float) (objectList.get(0).lat  / 180 * Math.PI);
-        float[] enu = latlonToENU(latx, lonx, (float)objectList.get(0).h, latu, lonu, (float)objectList.get(0).h);
-        Log.i("krbrlog", "x:" + enu[0]);
-        Log.i("krbrlog", "y:" + enu[1]);
-        Log.i("krbrlog", "z:" + enu[2]);
-        namiarM = enu;
     }
 
 
@@ -114,15 +105,14 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
             if (objectList.size() > 0) {
 
                 for (int i = 0 ; i < objectList.size(); i ++) {
-                    float lonx = (float) (loc1.getLongitude() / 180 * Math.PI);
-                    float latx = (float) (loc1.getLatitude() / 180 * Math.PI);
-                    float lonu = (float) (objectList.get(i).lgn / 180 * Math.PI);
-                    float latu = (float) (objectList.get(i).lat / 180 * Math.PI);
-                    float[] enu = latlonToENU(latx, lonx, (float) loc1.getAltitude(), latu, lonu, (float) objectList.get(i).h);
-                    Log.i("krbrlog", "x:" + enu[0]);
-                    Log.i("krbrlog", "y:" + enu[1]);
-                    Log.i("krbrlog", "z:" + enu[2]);
+                    float lonx = (float) ( loc1.getLatitude()  / 180 * Math.PI);
+                    float latx = (float) (  loc1.getLongitude()/ 180 * Math.PI);
+                    float lonu = (float) ( objectList.get(i).lat / 180 * Math.PI);
+                    float latu = (float) ( objectList.get(i).lgn/ 180 * Math.PI);
+                    float[] enu = latlonToENU(latx, lonx, (float) loc1.getAltitude(), latu, lonu, (float) loc1.getAltitude());
+
                     namiarM = enu;
+
                 }
             }
         }
@@ -208,35 +198,35 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
 
             //rotFrmBtoM*cameraB
 
-            cameraM[0] = cameraB[0] * rotFromBtoM[0] +
-                    cameraB[1] * rotFromBtoM[1] +
-                    cameraB[2] * rotFromBtoM[2];
-            cameraM[1] = cameraB[0] * rotFromBtoM[0 + 3] +
-                    cameraB[1] * rotFromBtoM[1 + 3] +
-                    cameraB[2] * rotFromBtoM[2 + 3];
-            cameraM[2] = cameraB[0] * rotFromBtoM[0 + 6] +
-                    cameraB[1] * rotFromBtoM[1 + 6] +
-                    cameraB[2] * rotFromBtoM[2 + 6];
-            //Log.i("kbbrlog", "getAngle: " + getAngle(northM, cameraM));
-            tv.setText("" + (double) (Math.round(getAngle(namiarM, cameraM) * 1000)) / 1000);
 
-            namiarB[0] = namiarM[0] * rotFromBtoM[0] +
-                    namiarM[1] * rotFromBtoM[3] +
-                    namiarM[2] * rotFromBtoM[6];
-            namiarB[1] = namiarM[0] * rotFromBtoM[1] +
-                    namiarM[1] * rotFromBtoM[4] +
-                    namiarM[2] * rotFromBtoM[7];
-            namiarB[2] = namiarM[0] * rotFromBtoM[2] +
-                    namiarM[1] * rotFromBtoM[5] +
-                    namiarM[2] * rotFromBtoM[8];
+                cameraM[0] = cameraB[0] * rotFromBtoM[0] +
+                        cameraB[1] * rotFromBtoM[1] +
+                        cameraB[2] * rotFromBtoM[2];
+                cameraM[1] = cameraB[0] * rotFromBtoM[0 + 3] +
+                        cameraB[1] * rotFromBtoM[1 + 3] +
+                        cameraB[2] * rotFromBtoM[2 + 3];
+                cameraM[2] = cameraB[0] * rotFromBtoM[0 + 6] +
+                        cameraB[1] * rotFromBtoM[1 + 6] +
+                        cameraB[2] * rotFromBtoM[2 + 6];
+                //Log.i("kbbrlog", "getAngle: " + getAngle(northM, cameraM));
+                tv.setText("" + (double) (Math.round(getAngle(namiarM, cameraM) * 1000)) / 1000);
+
+                namiarB[0] = namiarM[0] * rotFromBtoM[0] +
+                        namiarM[1] * rotFromBtoM[3] +
+                        namiarM[2] * rotFromBtoM[6];
+                namiarB[1] = namiarM[0] * rotFromBtoM[1] +
+                        namiarM[1] * rotFromBtoM[4] +
+                        namiarM[2] * rotFromBtoM[7];
+                namiarB[2] = namiarM[0] * rotFromBtoM[2] +
+                        namiarM[1] * rotFromBtoM[5] +
+                        namiarM[2] * rotFromBtoM[8];
 
 
+                mv.x = namiarB[0] / namiarB[2];
+                mv.y = namiarB[1] / namiarB[2];
 
+                mv.invalidate();
 
-            mv.x = namiarB[0] / namiarB[2];
-            mv.y = namiarB[1] / namiarB[2];
-
-            mv.invalidate();
         }
     }
 

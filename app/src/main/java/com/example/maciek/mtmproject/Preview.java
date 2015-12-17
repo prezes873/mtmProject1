@@ -37,8 +37,9 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
 
         camera = Camera.open();
-        camera.setDisplayOrientation(90);
+        camera.setDisplayOrientation(0);
         Camera.Parameters cp = camera.getParameters();
+
         cp.setPreviewSize(640,480);
         camera.setParameters(cp);
         //Toast.makeText(this.getContext(), "surfaceCreated", Toast.LENGTH_LONG).show();
