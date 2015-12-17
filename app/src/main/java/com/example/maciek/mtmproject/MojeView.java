@@ -43,7 +43,9 @@ public class MojeView extends View{
 
         float sy = canvas.getHeight();
         float sx = canvas.getWidth();
-        canvas.drawCircle(-x*sx+sx/2,y*sy+sy/2,30,p);
+
+
+        canvas.drawCircle(-x * sx + sx / 2, y * sy + sy / 2, 30, p);
 
 
         if(dane!=null)

@@ -6,11 +6,14 @@ package com.example.maciek.mtmproject;
 public class Object {
 
     String nazwa;
-    double lat, lgn;
+    double lat, lgn, h;
+    int id;
 
 
-    public  Object(double lgn, double lat, String nazwa)
+    public  Object(int id, double lgn, double lat, double h, String nazwa)
     {
+        this.h = h;
+        this.id = id;
         this.lat = lat;
         this.lgn = lgn;
         this.nazwa = nazwa;

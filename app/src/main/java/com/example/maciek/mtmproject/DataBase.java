@@ -1,12 +1,10 @@
 package com.example.maciek.mtmproject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Environment;
-import android.util.Log;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +22,7 @@ public class DataBase {
     private DataBase(Context context)
     {
         this.context = context;
-        String test = Environment.getRootDirectory().getPath()+File.separator+"myDB";
-        boolean a = dir_exists(test);
-        myDataBase = this.context.openOrCreateDatabase("test.db", context.MODE_PRIVATE , null);
+        myDataBase = this.context.openOrCreateDatabase("DB.db", context.MODE_PRIVATE , null);
         //clearTable();
         createTable();
     }
@@ -41,31 +37,29 @@ public class DataBase {
     }
 
 
-
-    public boolean dir_exists(String dir_path)
-    {
-        boolean ret = false;
-        File dir = new File(dir_path);
-        if(dir.exists() && dir.isDirectory())
-            ret = true;
-        return ret;
-    }
-
     private void createTable()
     {
-        myDataBase.execSQL("Create table if not exists objectTable(Name VARCHAR, Latitude double, Longitutde double);");
-        //myDataBase.execSQL("Insert into objectTable Values('test', 2.3 , 2.3);");
+try {
+    myDataBase.execSQL("Create table if not exists ObjectTable(ID INTEGER PRIMARY KEY AUTOINCREMENT , Name VARCHAR, Latitude double, Longitutde double, Altitude double);");
+    /*addObjectToTable(52.45, 18.12, "test1");
+    addObjectToTable(52.45 , 18.12 , "test2");
+    addObjectToTable(52.45 , 18.12 , "test3");*/
+}
+catch (SQLiteException ex)
+{
+    String t = ex.getMessage().toString();
+}
     }
 
     private void clearTable()
     {
-        myDataBase.execSQL("Delete from objectTable");
+        myDataBase.execSQL("Delete * from objectTable");
     }
 
-    public void addObjectToTable(double lng, double lat, String name)
+    public void addObjectToTable(double lng, double lat, double h, String name)
     {
         try {
-            myDataBase.execSQL("Insert into objectTable Values('" + name + "', " + lat + " , " + lng + ");");
+            myDataBase.execSQL("Insert into ObjectTable(Name, Latitude,Longitutde, Altitude  ) Values('" + name + "', " + lat + " , " + lng + " , " + h+");");
         }
         catch(android.database.sqlite.SQLiteException ex)
         {
@@ -76,15 +70,17 @@ public class DataBase {
     public List<Object> getObjectListFromDB()
     {
         List<Object> objectList = new ArrayList<>();
-        Cursor objectTable = myDataBase.rawQuery("Select * from objectTable",null);
+        Cursor objectTable = myDataBase.rawQuery("Select * from ObjectTable",null);
 
         objectTable.moveToFirst();
         for (int i = 0; i < objectTable.getCount(); i++)
         {
-            String name = objectTable.getString(0);
-            double lat = objectTable.getDouble(1);
-            double lng = objectTable.getDouble(2);
-            Object temp = new Object(lng, lat , name);
+            int id = objectTable.getInt(0);
+            String name = objectTable.getString(1);
+            double lat = objectTable.getDouble(2);
+            double lng = objectTable.getDouble(3);
+            double h = objectTable.getDouble(4);
+            Object temp = new Object(id, lng, lat ,h , name);
             objectList.add(temp);
             objectTable.moveToNext();
         }
@@ -96,7 +92,7 @@ public class DataBase {
     {
         String[] list;
 
-        Cursor objectTable = myDataBase.rawQuery("Select Name from objectTable",null);
+        Cursor objectTable = myDataBase.rawQuery("Select Name from ObjectTable",null);
 
         objectTable.moveToFirst();
         list = new String[objectTable.getCount()];
@@ -108,5 +104,11 @@ public class DataBase {
 
         return list;
     }
+
+    public void deleteObject(int id)
+    {
+        myDataBase.execSQL("DELETE FROM ObjectTable WHERE ID = "+id);
+    }
+
 
 }
