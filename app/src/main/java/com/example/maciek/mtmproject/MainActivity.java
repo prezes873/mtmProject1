@@ -105,10 +105,10 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
             if (objectList.size() > 0) {
 
                 for (int i = 0 ; i < objectList.size(); i ++) {
-                    float lonx = (float) ( loc1.getLatitude()  / 180 * Math.PI);
-                    float latx = (float) (  loc1.getLongitude()/ 180 * Math.PI);
-                    float lonu = (float) ( objectList.get(i).lat / 180 * Math.PI);
-                    float latu = (float) ( objectList.get(i).lgn/ 180 * Math.PI);
+                    float lonu = (float) ( loc1.getLongitude()  / 180 * Math.PI);
+                    float latu = (float) ( loc1.getLatitude() / 180 * Math.PI);
+                    float lonx = (float) ( objectList.get(i).lgn / 180 * Math.PI);
+                    float latx = (float) ( objectList.get(i).lat/ 180 * Math.PI);
                     float[] enu = latlonToENU(latx, lonx, (float) loc1.getAltitude(), latu, lonu, (float) loc1.getAltitude());
 
                     namiarM = enu;
