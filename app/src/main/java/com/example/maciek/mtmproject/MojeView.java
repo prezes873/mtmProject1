@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +22,7 @@ public class MojeView extends View{
 
     public void setDane(float[] dane) {
         this.dane = dane;
-        j++;
+        //j++;
     }
 
     private int i =0;
@@ -46,16 +47,17 @@ public class MojeView extends View{
         float sy = canvas.getHeight();
         float sx = canvas.getWidth();
 
-        float drawy = x * sy + sy / 2;
-        float drawx =  y * sx + sx / 2;
-        canvas.drawCircle(drawx, drawy, 30, p);
+        float drawy = y * sy + sy / 2;
+        float drawx =  -x * sx + sx / 2;
+
+        //canvas.drawCircle(drawx, drawy, 30, p);
         //canvas.drawText(nazwa , drawx , drawy + 20, p);
         //Log.i("x: ", Float.toString(drawx));
         if(dane!=null)
         {
             canvas.drawLine(0, 0, 100*dane[0], 100*dane[0], p);
             p.setStyle(Style.STROKE);
-            canvas.drawRect(100, 100, 200, 200, p);
+            canvas.drawRect(drawx, drawy, 200, 200, p);
 
         }
     }

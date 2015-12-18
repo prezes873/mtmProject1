@@ -12,7 +12,7 @@ import android.view.SurfaceView;
 
 class Preview extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
-    private Camera camera;
+    public Camera camera;
 
     Preview(Context context) {
         super(context);
@@ -37,7 +37,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
 
         camera = Camera.open();
-        camera.setDisplayOrientation(0);
+        camera.setDisplayOrientation(90);
         Camera.Parameters cp = camera.getParameters();
 
         cp.setPreviewSize(640,480);

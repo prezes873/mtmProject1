@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -31,7 +32,8 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
     Button btnAddPoint, btnShowPoint;
     FragmentManager fm = getSupportFragmentManager();
     boolean Flag;
-
+    float bearing;
+    SurfaceView cameraView;
     final float cameraB[] = new float[]{0, 0, 1};
     float namiarM[] = new float[]{1, 0, 0};
     float namiarB[] = new float[]{0, 1, 0};
@@ -42,7 +44,7 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        cameraView = (SurfaceView) findViewById(R.id.cameraView);
         tvLocation = (TextView) findViewById(R.id.tvLocation);
         tv = (TextView) findViewById(R.id.tvKat);
         mv = (MojeView) findViewById(R.id.view);
@@ -51,6 +53,7 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
         btnShowPoint = (Button) findViewById(R.id.btnShowPoint);
         objectList = DataBase.getInstance(this).getObjectListFromDB();
         final MainActivity temp = this;
+        Flag = true;
 
         btnAddPoint.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,15 +104,23 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
 
             tvLocation.setText(String.valueOf(loc.getLatitude()) + "\n" + String.valueOf(loc.getLongitude()));
 
-            loc1 = loc;
+                loc1 = loc;
+                Flag = false;
+
             if (objectList.size() > 0) {
 
                 for (int i = 0 ; i < objectList.size(); i ++) {
+
                     float lonu = (float) ( loc1.getLongitude()  / 180 * Math.PI);
                     float latu = (float) ( loc1.getLatitude() / 180 * Math.PI);
-                    float lonx = (float) ( objectList.get(i).lgn / 180 * Math.PI);
-                    float latx = (float) ( objectList.get(i).lat/ 180 * Math.PI);
+                    float lonx = (float) ( objectList.get(0).lgn / 180 * Math.PI);
+                    float latx = (float) ( objectList.get(0).lat/ 180 * Math.PI);
                     float[] enu = latlonToENU(latx, lonx, (float) loc1.getAltitude(), latu, lonu, (float) loc1.getAltitude());
+
+                    Location temp = new Location("Test");
+                    temp.setAltitude(objectList.get(0).h);
+                    temp.setLatitude(objectList.get(0).lat);
+                    temp.setLongitude(objectList.get(0).lgn);
 
                     namiarM = enu;
 
@@ -198,7 +209,6 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
 
             //rotFrmBtoM*cameraB
 
-
                 cameraM[0] = cameraB[0] * rotFromBtoM[0] +
                         cameraB[1] * rotFromBtoM[1] +
                         cameraB[2] * rotFromBtoM[2];
@@ -224,6 +234,8 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
 
                 mv.x = namiarB[0] / namiarB[2];
                 mv.y = namiarB[1] / namiarB[2];
+
+
 
                 mv.invalidate();
 

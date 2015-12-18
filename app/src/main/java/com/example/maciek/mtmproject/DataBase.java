@@ -41,7 +41,7 @@ public class DataBase {
     {
 try {
     myDataBase.execSQL("Create table if not exists ObjectTable(ID INTEGER PRIMARY KEY AUTOINCREMENT , Name VARCHAR, Latitude double, Longitutde double, Altitude double);");
-    //addObjectToTable(18.594205, 54.328690, 100.0 , "sklep2");
+    //addObjectToTable(18.612122, 54.368834, 100.0, "test1");
     /*addObjectToTable(52.45 , 18.12 , "test2");
     addObjectToTable(52.45 , 18.12 , "test3");*/
 }
