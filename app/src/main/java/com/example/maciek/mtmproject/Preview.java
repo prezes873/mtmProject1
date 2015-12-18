@@ -65,3 +65,6 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         camera.startPreview();
     }
 }
+
+
+

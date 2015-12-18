@@ -9,20 +9,28 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import java.util.List;
+
 public class MojeView extends View{
 
     private float[] dane=null;
-
+    List<float[]> listPoint;
+    List<Object> objectList;
     public float x;
     public float y;
-    public String nazwa;
+    public String[] nazwa;
     public MojeView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public void setDane(float[] dane) {
-        this.dane = dane;
-        //j++;
+    public void setDane(List<float[]> listPoint) {
+        this.listPoint = listPoint;
+
+    }
+
+    public void setOjectList(List<Object> objectList) {
+        this.objectList = objectList;
+
     }
 
     private int i =0;
@@ -39,27 +47,24 @@ public class MojeView extends View{
 
         Paint p = new Paint();
         p.setARGB(255, 255, 0, 0);
-
-       // canvas.drawText("MojeView.onDraw: i=" + i++, 200, 100, p);
-
-
+        p.setTextSize(40.0f);
 
         float sy = canvas.getHeight();
         float sx = canvas.getWidth();
 
-        float drawy = y * sy + sy / 2;
-        float drawx =  -x * sx + sx / 2;
-
-        //canvas.drawCircle(drawx, drawy, 30, p);
-        //canvas.drawText(nazwa , drawx , drawy + 20, p);
-        //Log.i("x: ", Float.toString(drawx));
-        if(dane!=null)
+        for (int i = 0; i < listPoint.size(); i++)
         {
-            canvas.drawLine(0, 0, 100*dane[0], 100*dane[0], p);
-            p.setStyle(Style.STROKE);
-            canvas.drawRect(drawx, drawy, 200, 200, p);
+            float[] temp = listPoint.get(i).clone();
+            float drawy = temp[1]*sy+sy/2;
+            float drawx =  -temp[0]*sx+sx/2;
 
+            if (temp[2] < 0)
+            {
+                canvas.drawCircle(drawx, drawy, 30, p);
+                canvas.drawText(objectList.get(i).nazwa, drawx , drawy - 70 ,p  );
+            }
         }
+
     }
 
 
